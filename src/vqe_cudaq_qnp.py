@@ -143,6 +143,7 @@ class VqeQnp(object):
         Run VQE
         """
         mpi_support = options.get("mpi_support", False)
+        return_final_state_vec = options.get("return_final_state_vec", False)
         if mpi_support:
             cudaq.mpi.initialize()
             print('# mpi is initialized? ', cudaq.mpi.is_initialized())
@@ -201,7 +202,14 @@ class VqeQnp(object):
             df = pd.DataFrame(info_final_state, index=[0])
             df.to_csv(f'{self.system_name}_info_final_state_{self.n_layers}_layers_opt_{optimizer_type}.csv',
                       index=False)
-            return total_opt_energy, best_parameters, callback_energies
+
+            results = {"energy_optimized": total_opt_energy,
+                       "best_parameters": best_parameters,
+                       "callback_energies": callback_energies}
+
+            if return_final_state_vec:
+                results["state_vec"] = self.get_state_vector(best_parameters)
+            return results
 
         else:
             print(f"# Optimizer {optimizer_type} not implemented")

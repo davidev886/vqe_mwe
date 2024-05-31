@@ -47,7 +47,8 @@ if __name__ == "__main__":
                'optimizer_type': optimizer_type,
                'energy_core': energy_core,
                'mpi_support': mpi_support,
-               'initial_parameters': None}
+               'initial_parameters': None,
+               'return_final_state_vec': True}
 
     print("# init_mo_occ", init_mo_occ)
     print("# layers", n_vqe_layers)
@@ -57,8 +58,9 @@ if __name__ == "__main__":
                  init_mo_occ=init_mo_occ,
                  target=target)
 
-    energy_optimized, best_parameters, callback_energies = vqe.run_vqe_cudaq(hamiltonian_cudaq,
-                                                                             options=options)
+    results = vqe.run_vqe_cudaq(hamiltonian_cudaq, options=options)
+    energy_optimized = results['energy_optimized']
+
     time_end = time.time()
     print(f"# Best energy {energy_optimized}")
     print(f"# VQE time {time_end - time_start}")
